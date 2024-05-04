@@ -1,9 +1,10 @@
+import os
 import pandas as pd
 
 class DS4PreProcessor:
     def __init__(self, df4):
         self.df4 = df4.copy()
-        self.df4_dict = pd.read_csv("Alpha/datasets/dataset4 dictionary.csv")
+        self.df4_dict = pd.read_csv(os.path.join('ml/datasets', 'dataset4 dictionary.csv'))
         self.__preprocess()
 
     @property

@@ -8,3 +8,5 @@ graphviz
 flask
 python-dotenv
 joblib
+pymysql
+tensorflow

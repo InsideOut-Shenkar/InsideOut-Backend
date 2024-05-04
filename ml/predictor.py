@@ -1,21 +1,83 @@
 from abc import ABC, abstractmethod
 import pandas as pd
-import joblib
-import os
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics import accuracy_score, classification_report
+from sklearn.model_selection import train_test_split
 
 class Predictor(ABC):
-    def __init__(self, dataframe, target_column):
+    def __init__(self, dataframe, path, target_column, test_size):
         self.df = dataframe.copy()
+        self.path = path
         self.target_column = target_column
         self.model = None
         self.label_encoders = {}
         self.scalers = {}
-        self.preprocessed_data = self.preprocess_data()
+        self.preprocessed_data = self.__preprocess_data()
+        
+        X = self.preprocessed_data.drop(self.target_column, axis=1)
+        y = self.preprocessed_data[self.target_column]
+        
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+
+    def train_model(self):
+        if self.load_model(self.path) is not None:
+            return
+
+        if self.target_column not in self.preprocessed_data.columns:
+            raise ValueError(f"Target column '{self.target_column}' not found in data.")
+
+        self.model = self.build_model(self.X_train, self.y_train)
+        self.save_model(self.path)
+
+    def evaluate_model(self):
+        if self.path is not None:
+            self.model = self.load_model(self.path)
+        y_pred = self.model.predict(self.X_test)
+        y_pred = (y_pred > 0.5).astype(int)
+        return classification_report(self.y_test, y_pred, output_dict=True, zero_division=0)
+
+    def predict(self, row):
+        """
+        Load the model if a path is provided, preprocess the row, and predict using the model.
+        """
+        if self.path is not None:
+            model = self.load_model(self.path)
+        else:
+            model = self.model
+        row_preprocessed = self.__impute_row(row.to_frame().transpose())
+        row_preprocessed = self.__preprocess_row(row_preprocessed)
+        row_preprocessed = row_preprocessed.drop(self.target_column, axis=1, errors='ignore')  # Drop target if it's included
+        return model.predict(row_preprocessed).reshape(1)[0]
+
+    @abstractmethod
+    def build_model(self, X_train, y_train):
+        """
+        Abstract method for building the model, specific to each derived class.
+        :param X: feature columns for training
+        :param y: target column for training
+        :return: model
+        """
+        pass
+
+    @abstractmethod
+    def save_model(self, model_path):
+        """
+        Abstract method for saving the model to a file.
+        :param model_path: path to save the model
+        """
+        pass
     
-    def preprocess_data(self):
+    @abstractmethod
+    def load_model(self, model_path):
+        """
+        Abstract method for loading the model from a file.
+        :param model_path: path to load the model
+        :return: model
+        """
+        pass
+
+    def __preprocess_data(self):
         numeric_columns = self.df.select_dtypes(include=['number']).columns
         categorical_columns = self.df.select_dtypes(exclude=['number']).columns
 
@@ -48,33 +110,6 @@ class Predictor(ABC):
         
         return preprocessed_data
 
-    def train_model(self, model_path=None):
-        if self.target_column not in self.preprocessed_data.columns:
-            raise ValueError(f"Target column '{self.target_column}' not found in data.")
-
-        X = self.preprocessed_data.drop(self.target_column, axis=1)
-        y = self.preprocessed_data[self.target_column]
-
-        self.model, X_test, y_test = self.build_model(X, y)
-
-        y_pred = self.model.predict(X_test)
-        accuracy = accuracy_score(y_test, y_pred)
-
-        if model_path is not None:
-            if '/' in model_path:
-                os.makedirs(model_path[:model_path.rfind('/')], exist_ok=True)
-            joblib.dump(self.model, model_path)
-
-    @abstractmethod
-    def build_model(self, X, y):
-        """
-        Abstract method for building the model, specific to each derived class.
-        :param X: features columns
-        :param y: target column
-        :return: model, X_test, y_test
-        """
-        pass
-
     def __preprocess_row(self, row):
         """
         Helper method to preprocess a single row, using fitted encoders and scalers.
@@ -106,25 +141,3 @@ class Predictor(ABC):
                 elif column in self.scalers:
                     row[column] = self.df[column].median()
         return row
-
-    def predict(self, row, model_path=None):
-        """
-        Load the model if a path is provided, preprocess the row, and predict using the model.
-        """
-        if model_path is not None:
-            model = joblib.load(model_path)
-        else:
-            model = self.model
-        row_preprocessed = self.__impute_row(row.to_frame().transpose())
-        row_preprocessed = self.__preprocess_row(row_preprocessed)
-        row_preprocessed = row_preprocessed.drop(self.target_column, axis=1, errors='ignore')  # Drop target if it's included
-
-        probabilities = model.predict_proba(row_preprocessed)[0]
-        classes = model.classes_
-        result = []
-        for cls, prob in zip(classes, probabilities):
-            result.append({
-                'class': int(cls),
-                'probability': float(prob)
-            })
-        return result

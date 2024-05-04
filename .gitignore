@@ -129,6 +129,10 @@ ENV/
 env.bak/
 venv.bak/
 
+# Project
+tmp.*
+tmp.*/
+
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -171,6 +175,7 @@ poetry.toml
 pyrightconfig.json
 
 ### VisualStudioCode ###
+.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
