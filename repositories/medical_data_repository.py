@@ -34,12 +34,12 @@ class MedicalDataRepository(Repository):
         result = self.db_manager.execute_query(id_query)
         return result[0]['LAST_INSERT_ID()'] if result else None
 
-    def add_feature(self, item_data):
+    def add_feature(self, item_data_key, item_data_value):
         insert_query = """
             INSERT INTO Medical_Data_Feature (name, value) 
             VALUES (%s, %s)
         """
-        self.db_manager.execute_query(insert_query, (item_data['name'], item_data['value']))
+        self.db_manager.execute_query(insert_query, (item_data_key, item_data_value))
         
         id_query  = "SELECT LAST_INSERT_ID()"
         result = self.db_manager.execute_query(id_query)
