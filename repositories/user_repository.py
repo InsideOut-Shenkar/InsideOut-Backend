@@ -5,7 +5,7 @@ from repositories.repository import Repository
 class UserRepository(Repository):
     def get(self, user_id):
         query = """
-            SELECT user_id, rule_id, full_name, username
+            SELECT *
             FROM Users
             WHERE user_id = %s
         """
@@ -13,25 +13,30 @@ class UserRepository(Repository):
     
     def add(self, user_data):
         query = """
-            INSERT INTO Users (rule_id, full_name, username, hashed_password, salt)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO Users (role_id, full_name, username)
+            VALUES (
+                (SELECT role_id FROM Roles WHERE name = %s),
+                %s, %s
+            )
         """
-        return self.db_manager.execute_query(query, (
-            user_data['rule_id'],
+        self.db_manager.execute_query(query, (
+            user_data['role'],
             user_data['full_name'],
-            user_data['username'],
-            user_data['hashed_password'],
-            user_data['salt']
+            user_data['username']
         ))
+        
+        id_query  = "SELECT LAST_INSERT_ID()"
+        result = self.db_manager.execute_query(id_query)
+        return result[0]['LAST_INSERT_ID()'] if result else None
     
     def update(self, user_id, update_data):
         query = """
             UPDATE Users
-            SET rule_id = %s, full_name = %s, username = %s
+            SET role_id = %s, full_name = %s, username = %s
             WHERE user_id = %s
         """
         return self.db_manager.execute_query(query, (
-            update_data['rule_id'],
+            update_data['role_id'],
             update_data['full_name'],
             update_data['username'],
             user_id
