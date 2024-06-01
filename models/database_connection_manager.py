@@ -31,14 +31,21 @@ class DatabaseConnectionManager:
         )
     
     def execute_query(self, query, args=None):
-        query = query.lstrip()
-        with self.connection.cursor() as cursor:
-            cursor.execute(query, args)
-            if query.lower().startswith("select"):
-                return cursor.fetchall()
+        try: 
+            query = query.lstrip()
+            with self.connection.cursor() as cursor:
+                cursor.execute(query, args)
+                if query.lower().startswith("select"):
+                    return cursor.fetchall()
+                else:
+                    self.connection.commit()
+                    return True
+        except pymysql.err.OperationalError as e:
+            if e.args[0] in (2006, 2013):
+                self.connection = self._create_connection()
+                return self.execute_query(query, args)
             else:
-                self.connection.commit()
-                return True
+                raise
 
     def get_connection(self):
         return self.connection
