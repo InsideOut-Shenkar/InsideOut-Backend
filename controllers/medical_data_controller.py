@@ -13,13 +13,13 @@ class MedicalDataController:
             return jsonify({'error': 'Missing data, please provide medical_info and patient_id'}), 400
 
         try:
-            med_data_id = self.medical_data_repository.add(data)
+            med_data_id = self.medical_data_repository.add(data['patient_id'])
             if med_data_id is None:
                 raise ValueError('Failed to create medical data record.')
 
             failed_features = []
             for feature in data['medical_info']:
-                feature_id = self.medical_data_repository.add_feature(feature)
+                feature_id = self.medical_data_repository.add_feature(feature, data['medical_info'][feature])
                 if not feature_id:
                     failed_features.append(feature)
 
