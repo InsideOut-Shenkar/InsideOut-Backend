@@ -23,12 +23,12 @@ class MedicalDataRepository(Repository):
         """
         return self.db_manager.execute_query(query, (med_data_id))
 
-    def add(self, item_data):
+    def add(self, patient_id):
         insert_query = """
             INSERT INTO Medical_Data (patient_id) 
             VALUES (%s)
         """
-        self.db_manager.execute_query(insert_query, (item_data['patient_id']))
+        self.db_manager.execute_query(insert_query, (patient_id))
 
         id_query  = "SELECT LAST_INSERT_ID()"
         result = self.db_manager.execute_query(id_query)
