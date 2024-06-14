@@ -23,6 +23,10 @@ def delete_medical_data(med_data_id):
 def add_medical_data_features(medical_data_id):
     return medical_data_controller.add_medical_data_features(medical_data_id)
 
+@medical_data_blueprint.route('/features/<int:medical_data_id>', methods=['PUT'])
+def update_medical_data_features(medical_data_id):
+    return medical_data_controller.update_medical_data_features(medical_data_id)
+
 @medical_data_blueprint.route('/features/<int:medical_data_feature_id>', methods=['DELETE'])
 def delete_medical_data_feature(medical_data_feature_id):
     return medical_data_controller.delete_medical_data_feature(medical_data_feature_id)
