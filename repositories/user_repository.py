@@ -5,9 +5,15 @@ from repositories.repository import Repository
 class UserRepository(Repository):
     def get(self, user_id):
         query = """
-            SELECT *
-            FROM Users
-            WHERE user_id = %s
+            SELECT
+                u.id, r.name AS role, u.full_name, u.username
+            FROM
+                Users u
+            JOIN
+                Roles r
+            ON
+                u.role_id = r.id
+            WHERE u.id = %s
         """
         return self.db_manager.execute_query(query, (user_id,))
     
