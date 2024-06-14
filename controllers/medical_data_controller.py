@@ -82,6 +82,26 @@ class MedicalDataController:
             return jsonify(updated_data), 200
         except Exception as e:
             return jsonify({'error': 'Failed to update medical data', 'details': str(e)}), 500
+        
+    def update_medical_data_features(self, medical_data_id):
+        data = request.get_json()
+        if not data or 'medical_info' not in data:
+            return jsonify({'error': 'Missing data, please provide medical_info'}), 400
+
+        features = data['medical_info']
+
+        try:
+            failed_features = []
+            for feature, value in features.items():
+                if not self.medical_data_repository.update_feature(medical_data_id, feature, value):
+                    failed_features.append(feature)
+
+            if failed_features:
+                return jsonify({'error': 'Failed to update some features', 'details': failed_features}), 400
+
+            return jsonify({'message': 'Medical data features updated successfully'}), 200
+        except Exception as e:
+            return jsonify({'error': 'An internal error occurred while updating medical data features', 'details': str(e)}), 500
 
     def delete_medical_data(self, med_data_id):
         try:
