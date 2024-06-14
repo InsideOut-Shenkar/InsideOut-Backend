@@ -43,20 +43,21 @@ class PatientRepository(Repository):
     def get_patients_list_by_user_id(self, user_id):
         query = """
             SELECT 
+                Patients.id
                 Patients.id_number, 
                 Patients.date_of_birth, 
                 Users.full_name,
-                COUNT(Reports.report_id) AS report_count
+                COUNT(Reports.id) AS report_count
             FROM 
                 Patients 
             JOIN 
-                Users ON Patients.created_by = Users.user_id 
+                Users ON Patients.created_by = Users.id 
             LEFT JOIN 
-                Reports ON Patients.patient_id = Reports.patient_id
+                Reports ON Patients.id = Reports.patient_id
             WHERE 
-                Users.user_id = %s
+                Users.id = %s
             GROUP BY 
-                Patients.patient_id
+                Patients.id
         """
         return self.db_manager.execute_query(query, (user_id))
     
