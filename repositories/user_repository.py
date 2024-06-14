@@ -49,5 +49,5 @@ class UserRepository(Repository):
         ))
     
     def delete(self, user_id):
-        query = "DELETE FROM Users WHERE user_id = %s"
+        query = "DELETE FROM Users WHERE id = %s"
         return self.db_manager.execute_query(query, (user_id,))
