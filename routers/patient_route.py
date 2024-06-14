@@ -11,6 +11,10 @@ patient_blueprint = Blueprint('patient_blueprint', __name__)
 def get_patient_by_id(patient_id):
     return patient_controller.get_patient(patient_id)
 
+@patient_blueprint.route('id-number/<int:id_number>', methods=['GET'])
+def get_patient_by_id_number(id_number):
+    return patient_controller.get_patient_by_id_number(id_number)
+
 @patient_blueprint.route('', methods=['GET'])
 def get_patients():
     return patient_controller.get_patients()
