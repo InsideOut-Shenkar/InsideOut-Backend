@@ -7,10 +7,15 @@ class UserController:
     def __init__(self):
         self.user_repository = UserRepository()
 
-    def get_user_by_id(user_id):
-        return {
-            "userID": user_id
-        }
+    def get_user_by_id(self, user_id):
+        try:
+            user = self.user_repository.get(user_id)
+            if user:
+                return jsonify(user[0]), 200
+            else:
+                return jsonify({'error': 'User not found'}), 404
+        except Exception as e:
+            return jsonify({'error': 'Failed to retrieve user', 'details': str(e)}), 500
     
     def add_user(self):
         user_data = json.loads(request.data)
