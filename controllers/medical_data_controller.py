@@ -37,18 +37,18 @@ class MedicalDataController:
 
     def add_medical_data_features(self, medical_data_id):
         data = request.get_json()
-        if not data or not all(key in data for key in ['medical_info']):
-            return jsonify({'error': 'Missing data, please provide both medical_info and med_data_id'}), 400
+        if not data or 'medical_info' not in data:
+            return jsonify({'error': 'Missing data, please provide medical_info'}), 400
 
         features = data['medical_info']
 
         try:
             failed_features = []
-            for feature in features:
-                feature_id = self.medical_data_repository.add_feature(feature)
+            for feature, value in features.items():
+                feature_id = self.medical_data_repository.add_feature(feature, value)
                 if not feature_id:
                     failed_features.append(feature)
-                    continue 
+                    continue
 
                 if not self.medical_data_repository.add_meds_feature(medical_data_id, feature_id):
                     failed_features.append(feature)
