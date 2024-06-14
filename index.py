@@ -31,6 +31,7 @@ CORS(app, resources={
 
 app.register_blueprint(view_blueprint, url_prefix='/view')
 app.register_blueprint(user_blueprint, url_prefix='/users')
+app.register_blueprint(report_blueprint, url_prefix='/reports')
 app.register_blueprint(patient_blueprint, url_prefix='/patients')
 app.register_blueprint(assessment_blueprint, url_prefix='/assessment')
 app.register_blueprint(medical_data_blueprint, url_prefix='/medical-data')
