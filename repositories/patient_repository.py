@@ -3,8 +3,12 @@ from repositories.repository import Repository
 
 class PatientRepository(Repository):
     def get(self, patient_id):
+        query = "SELECT * FROM Patients WHERE id = %s"
+        return self.db_manager.execute_query(query, (patient_id))
+    
+    def get_by_id_number(self, id_number):
         query = "SELECT * FROM Patients WHERE id_number = %s"
-        return self.db_manager.execute_query(query, (patient_id))[0]
+        return self.db_manager.execute_query(query, (id_number,))
 
     def get_patients(self):
         query = "SELECT * FROM Patients"
