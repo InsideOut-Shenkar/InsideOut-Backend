@@ -17,9 +17,11 @@ class MedicalDataController:
             if med_data_id is None:
                 raise ValueError('Failed to create medical data record.')
 
+            features = data['medical_info']
+
             failed_features = []
-            for feature in data['medical_info']:
-                feature_id = self.medical_data_repository.add_feature(feature, data['medical_info'][feature])
+            for feature, value in features.items():
+                feature_id = self.medical_data_repository.add_feature(feature, value)
                 if not feature_id:
                     failed_features.append(feature)
 
