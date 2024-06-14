@@ -21,7 +21,7 @@ class UserRepository(Repository):
         query = """
             INSERT INTO Users (role_id, full_name, username)
             VALUES (
-                (SELECT role_id FROM Roles WHERE name = %s),
+                (SELECT id FROM Roles WHERE name = %s),
                 %s, %s
             )
         """
