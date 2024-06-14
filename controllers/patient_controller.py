@@ -11,7 +11,17 @@ class PatientController:
         try:
             patient = self.patient_repository.get(patient_id)
             if patient:
-                return jsonify(patient), 200
+                return jsonify(patient[0]), 200
+            else:
+                return jsonify({'error': 'Patient not found'}), 404
+        except Exception as e:
+            return jsonify({'error': 'Failed to retrieve patient', 'details': str(e)}), 500
+        
+    def get_patient_by_id_number(self, id_number):
+        try:
+            patient = self.patient_repository.get_by_id_number(id_number)
+            if patient:
+                return jsonify(patient[0]), 200
             else:
                 return jsonify({'error': 'Patient not found'}), 404
         except Exception as e:
