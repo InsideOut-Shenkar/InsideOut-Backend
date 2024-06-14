@@ -55,6 +55,28 @@ class MedicalDataRepository(Repository):
     def update(self, id, update_data):
         """No need for updating an existing item"""
         pass
+
+    def update_feature(self, medical_data_id, feature, value):
+        query = """
+            UPDATE
+                Medical_Data_Feature mdf
+            JOIN 
+                Medical_Data_Features mdfs
+            ON
+                mdfs.medical_data_feature_id = mdf.id
+            JOIN
+                Medical_Data md
+            ON
+                mdfs.medical_data_id = md.id
+            SET 
+                mdf.value = %s
+            WHERE
+                md.name = %s
+            AND
+                mdf.id = %s
+        """
+        return self.db_manager.execute_query(query, (value, feature, medical_data_id))
+
     
     def delete(self, med_data_id):
         query = "DELETE FROM Medical_Data WHERE id = %s"
