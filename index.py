@@ -6,8 +6,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from routers.user_route import user_blueprint
-from routers.patient_route import patient_blueprint
 from routers.view_route import view_blueprint
+from routers.report_route import report_blueprint
+from routers.patient_route import patient_blueprint
 from routers.assessment_route import assessment_blueprint
 from routers.medical_data_route import medical_data_blueprint
 
@@ -18,6 +19,7 @@ CORS(patient_blueprint)
 CORS(view_blueprint)
 CORS(assessment_blueprint)
 CORS(medical_data_blueprint)
+CORS(report_blueprint)
 
 CORS(app, resources={
     r"/*": {
