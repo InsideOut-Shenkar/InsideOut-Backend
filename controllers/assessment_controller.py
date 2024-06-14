@@ -62,12 +62,14 @@ class AssessmentController:
         
         patient_id = data.get('patient_id')
         user_id = data.get('user_id')
-        medical_info = data.get('medical_info')
+        med_data_id = data.get('med_data_id')
+        weights = data.get('weights')
 
-        if not all([patient_id, user_id, medical_info]):
-            raise ValueError('Missing data, please provide patient_id, user_id, and medical_info')
 
-        return patient_id, user_id, medical_info
+        if not all([patient_id, user_id, med_data_id, weights]):
+            raise ValueError('Missing data, please provide patient_id, user_id, medical_info and weights')
+
+        return patient_id, user_id, med_data_id, weights
 
     def _get_patient(self, patient_id):
         patient = self.patient_repository.get(patient_id)
