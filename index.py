@@ -23,7 +23,7 @@ CORS(report_blueprint)
 
 CORS(app, resources={
     r"/*": {
-        "origins": "http://localhost:3000",
+        "origins": ["http://localhost:3000", "https://shenkar-insideout.com"],
         "headers": "*",
         "methods": "*"
     }
