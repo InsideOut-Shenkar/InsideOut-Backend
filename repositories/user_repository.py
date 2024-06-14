@@ -39,7 +39,7 @@ class UserRepository(Repository):
         query = """
             UPDATE Users
             SET role_id = %s, full_name = %s, username = %s
-            WHERE user_id = %s
+            WHERE id = %s
         """
         return self.db_manager.execute_query(query, (
             update_data['role_id'],
