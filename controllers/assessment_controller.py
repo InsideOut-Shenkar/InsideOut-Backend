@@ -27,7 +27,7 @@ class AssessmentController:
             patient_id, user_id, medical_data_id, weights = self._validate_input()
             medical_data = self.medical_data_repository.get(medical_data_id)
             # Construct the new object
-            medical_data = {item['name']: item['value'] for item in medical_data}
+            medical_data = { item['name']: item['value'] for item in medical_data }
             risk_level, assessment_score, model_predictions = risk_assessor.calculate_risk(
                 query=medical_data,
                 ds2_doctor_vote=int(weights['weight_1']),
