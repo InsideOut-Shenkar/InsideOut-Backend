@@ -85,3 +85,9 @@ class ReportRepository(Repository):
             DELETE FROM Reports WHERE id = %s
         """
         return self.db_manager.execute_query(query, (report_id))
+    
+    def delete_reports(self, reports_ids):
+        ids_tuple = tuple(reports_ids)
+        placeholders = ', '.join(['%s'] * len(ids_tuple))
+        query = f"DELETE FROM Reports WHERE id IN ({placeholders})"
+        return self.db_manager.execute_query(query, ids_tuple)
