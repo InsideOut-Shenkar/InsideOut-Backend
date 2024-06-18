@@ -27,14 +27,22 @@ class ReportRepository(Repository):
         query = """
             SELECT 
                 re.id, actual_risk, assessment_score, ri.risk_level as risk_level_label,
-                created_at, created_by, ds2_vote, ds4_vote, medical_data_id, modified_at,
-                patient_id
+                re.created_at, u.full_name, ds2_vote, ds4_vote, medical_data_id, modified_at,
+                patient_id, p.id_number
             FROM 
                 Reports re
             JOIN
                 Risks ri
             ON
                 re.risk_level = ri.id
+            JOIN
+                Users u
+            ON
+                re.created_by = u.id
+            JOIN
+                Patients p
+            ON
+                re.patient_id = p.id
         """
         return self.db_manager.execute_query(query)
 
