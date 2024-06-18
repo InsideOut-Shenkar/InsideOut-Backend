@@ -26,3 +26,16 @@ class ReportController:
                 return jsonify({'error': 'No reports found'}), 404
         except Exception as e:
             return jsonify({'error': 'An error occurred while fetching reports', 'details': str(e)}), 500
+
+    def delete_reports(self):
+        ids = json.loads(request.data)
+        if not ids:
+            return jsonify({'error': 'No reports IDs provided'}), 400
+        try:
+            result = self.report_repository.delete_reports(ids)
+            if result:
+                return jsonify({'message': 'Reports deleted successfully'}), 200
+            else:
+                return jsonify({'error': 'Reports not found'}), 404
+        except Exception as e:
+            return jsonify({'error': 'Failed to delete reports', 'details': str(e)}), 500
