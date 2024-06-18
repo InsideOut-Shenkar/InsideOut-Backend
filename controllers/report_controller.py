@@ -19,7 +19,7 @@ class ReportController:
         
     def get_reports(self):
         try:
-            reports = self.patient_repository.get_reports()
+            reports = self.report_repository.get_reports()
             if reports:
                 return jsonify(reports), 200
             else:
