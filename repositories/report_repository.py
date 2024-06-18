@@ -84,4 +84,4 @@ class ReportRepository(Repository):
         query = """
             DELETE FROM Reports WHERE id = %s
         """
-        return self.db_manager.execute_query(query, (report_id,))
+        return self.db_manager.execute_query(query, (report_id))
