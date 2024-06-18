@@ -14,3 +14,7 @@ def get_report_by_id(report_id):
 @report_blueprint.route('', methods=['GET'])
 def get_reports():
     return report_controller.get_reports()
+
+@report_blueprint.route('', methods=['DELETE'])
+def delete_reports():
+    return report_controller.delete_reports()
