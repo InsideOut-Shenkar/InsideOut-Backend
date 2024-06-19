@@ -27,23 +27,21 @@ class MedicalDataRepository(Repository):
         insert_query = """
             INSERT INTO Medical_Data (patient_id) 
             VALUES (%s)
+            RETURNING id
         """
-        self.db_manager.execute_query(insert_query, (patient_id))
+        result = self.db_manager.execute_query(insert_query, (patient_id))
+        return result[0]['id'] if result else None
 
-        id_query  = "SELECT LAST_INSERT_ID()"
-        result = self.db_manager.execute_query(id_query)
-        return result[0]['LAST_INSERT_ID()'] if result else None
 
     def add_feature(self, item_data_key, item_data_value):
         insert_query = """
             INSERT INTO Medical_Data_Feature (name, value) 
             VALUES (%s, %s)
+            RETURNING id
         """
-        self.db_manager.execute_query(insert_query, (item_data_key, item_data_value))
-        
-        id_query  = "SELECT LAST_INSERT_ID()"
-        result = self.db_manager.execute_query(id_query)
-        return result[0]['LAST_INSERT_ID()'] if result else None
+        result = self.db_manager.execute_query(insert_query, (item_data_key, item_data_value))
+        return result[0]['id'] if result else None
+
 
     def add_meds_feature(self, med_data_id, med_data_feature_id):
         query = """
@@ -52,32 +50,31 @@ class MedicalDataRepository(Repository):
         """
         return self.db_manager.execute_query(query, (med_data_id, med_data_feature_id))
 
+
     def update(self, id, update_data):
         """No need for updating an existing item"""
         pass
 
     def update_feature(self, medical_data_id, feature, value):
         query = """
-            UPDATE
-                Medical_Data_Feature mdf
-            JOIN 
+            UPDATE Medical_Data_Feature mdf
+            SET 
+                value = %s
+            FROM 
                 Medical_Data_Features mdfs
-            ON
-                mdfs.medical_data_feature_id = mdf.id
             JOIN
                 Medical_Data md
             ON
                 mdfs.medical_data_id = md.id
-            SET 
-                mdf.value = %s
             WHERE
-                md.name = %s
+                mdfs.medical_data_feature_id = mdf.id
             AND
-                mdf.id = %s
+                md.id = %s
+            AND
+                mdf.name = %s
         """
-        return self.db_manager.execute_query(query, (value, feature, medical_data_id))
+        return self.db_manager.execute_query(query, (value, medical_data_id, feature))
 
-    
     def delete(self, med_data_id):
         query = "DELETE FROM Medical_Data WHERE id = %s"
         return self.db_manager.execute_query(query, (med_data_id))
@@ -85,4 +82,5 @@ class MedicalDataRepository(Repository):
     def delete_feature(self, medical_data_feature_id):
         query = "DELETE FROM Medical_Data_Feature WHERE id = %s"
         return self.db_manager.execute_query(query, (medical_data_feature_id))
+
              

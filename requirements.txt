@@ -8,7 +8,7 @@ graphviz
 flask
 python-dotenv
 joblib
-pymysql
+psycopg2-binary
 tensorflow
 imblearn
 boto3

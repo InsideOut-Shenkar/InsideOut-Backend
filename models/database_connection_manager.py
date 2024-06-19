@@ -1,6 +1,7 @@
 # models/database_connection_manager.py
 
-import pymysql
+import psycopg2
+import psycopg2.extras
 import os
 
 class DatabaseConnectionManager:
@@ -17,21 +18,21 @@ class DatabaseConnectionManager:
         self.user = os.getenv('DB_USER')
         self.password = os.getenv('DB_PASSWORD')
         self.db = os.getenv('DB_NAME')
-        self.port = int(os.getenv('DB_PORT', 3306))
+        self.port = int(os.getenv('DB_PORT', 5432))
         self.connection = self._create_connection()
 
     def _create_connection(self):
-        return pymysql.connect(
+        return psycopg2.connect(
             host=self.host, 
             user=self.user, 
             password=self.password, 
-            db=self.db,
+            dbname=self.db,
             port=self.port,
-            cursorclass=pymysql.cursors.DictCursor
+            cursor_factory=psycopg2.extras.DictCursor
         )
     
     def execute_query(self, query, args=None):
-        try: 
+        try:
             query = query.lstrip()
             with self.connection.cursor() as cursor:
                 cursor.execute(query, args)
@@ -40,8 +41,8 @@ class DatabaseConnectionManager:
                 else:
                     self.connection.commit()
                     return True
-        except pymysql.err.OperationalError as e:
-            if e.args[0] in (2006, 2013):
+        except psycopg2.OperationalError as e:
+            if e.pgcode in ('08006', '08003'):
                 self.connection = self._create_connection()
                 return self.execute_query(query, args)
             else:

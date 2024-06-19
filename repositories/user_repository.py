@@ -24,16 +24,15 @@ class UserRepository(Repository):
                 (SELECT id FROM Roles WHERE name = %s),
                 %s, %s
             )
+            RETURNING id
         """
-        self.db_manager.execute_query(query, (
+        result = self.db_manager.execute_query(query, (
             user_data['role'],
             user_data['full_name'],
             user_data['username']
         ))
-        
-        id_query  = "SELECT LAST_INSERT_ID()"
-        result = self.db_manager.execute_query(id_query)
-        return result[0]['LAST_INSERT_ID()'] if result else None
+        return result[0]['id'] if result else None
+
     
     def update(self, user_id, update_data):
         query = """

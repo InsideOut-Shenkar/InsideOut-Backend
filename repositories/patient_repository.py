@@ -18,13 +18,10 @@ class PatientRepository(Repository):
         insert_query  = """
             INSERT INTO Patients (id_number, date_of_birth, created_by)
             VALUES (%s, %s, %s)
+            RETURNING id
         """
-        self.db_manager.execute_query(insert_query, (patient_data['id_number'], patient_data['date_of_birth'], patient_data['created_by']))
-
-        id_query  = "SELECT LAST_INSERT_ID()"
-        result = self.db_manager.execute_query(id_query)
-        return result[0]['LAST_INSERT_ID()'] if result else None
-    
+        result = self.db_manager.execute_query(insert_query, (patient_data['id_number'], patient_data['date_of_birth'], patient_data['created_by']))
+        return result[0]['id'] if result else None
 
     def update(self, id_number, update_data):
         query = "UPDATE Patients SET date_of_birth = %s, created_by = %s WHERE id_number = %s"
@@ -43,7 +40,7 @@ class PatientRepository(Repository):
     def get_patients_list_by_user_id(self, user_id):
         query = """
             SELECT 
-                Patients.id
+                Patients.id,
                 Patients.id_number, 
                 Patients.date_of_birth, 
                 Users.full_name,
@@ -57,10 +54,10 @@ class PatientRepository(Repository):
             WHERE 
                 Users.id = %s
             GROUP BY 
-                Patients.id
+                Patients.id, Patients.id_number, Patients.date_of_birth, Users.full_name
         """
         return self.db_manager.execute_query(query, (user_id))
-    
+
     def get_patients_list(self):
         query = """
             SELECT 
@@ -76,6 +73,7 @@ class PatientRepository(Repository):
             LEFT JOIN 
                 Reports ON Patients.id = Reports.patient_id
             GROUP BY 
-                Patients.id
+                Patients.id, Patients.id_number, Patients.date_of_birth, Users.full_name
         """
         return self.db_manager.execute_query(query, ())
+
