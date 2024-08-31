@@ -194,6 +194,6 @@ pyrightconfig.json
 .history
 .ionide
 
-ml/
-
 tmp/
+
+*.pem

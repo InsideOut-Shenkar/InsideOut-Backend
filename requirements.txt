@@ -2,7 +2,7 @@ numpy
 pandas
 matplotlib
 seaborn
-scikit-learn
+scikit-learn==1.4.0
 xgboost
 graphviz
 flask
@@ -12,3 +12,4 @@ pymysql
 tensorflow
 imblearn
 boto3
+flask-cors

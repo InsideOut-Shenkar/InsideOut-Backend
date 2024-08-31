@@ -45,7 +45,15 @@ class DatabaseConnectionManager:
                 self.connection = self._create_connection()
                 return self.execute_query(query, args)
             else:
+                print(f"OperationalError: {e.args[0]}, {e.args[1]}")
                 raise
+        except pymysql.err.InterfaceError as e:
+            print(f"InterfaceError: {e.args[0]}, {e.args[1]}")
+            self.connection = self._create_connection()
+            return self.execute_query(query, args)
+        except Exception as e:
+            print(f"Exception: {str(e)}")
+            raise
 
     def get_connection(self):
         return self.connection
